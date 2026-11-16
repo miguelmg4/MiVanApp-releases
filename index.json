@@ -1,0 +1,30 @@
+{
+ "schema": 1,
+ "attribution": "Datos nutricionales: Open Food Facts (ODbL)",
+ "stores": {
+  "mercadona": {
+   "name": "Mercadona",
+   "file": "mercadona.json.gz",
+   "count": 4320,
+   "syncedAt": "2026-11-23T15:44:18Z",
+   "sha256": "5eb0b368828571280b3a3285fa3740fa18fb07ba648948b142f7f856b5e5ebe6",
+   "stale": false
+  },
+  "ahorramas": {
+   "name": "Ahorramás",
+   "file": "ahorramas.json.gz",
+   "count": 7678,
+   "syncedAt": "2026-11-23T15:44:18Z",
+   "sha256": "8b0ddc0a09daf90f8cb4ec30eb94ca6e920534aac9b186b897531f1273f5f354",
+   "stale": false
+  },
+  "lidl": {
+   "name": "Lidl",
+   "file": "lidl.json.gz",
+   "count": 2654,
+   "syncedAt": "2026-11-23T15:44:18Z",
+   "sha256": "1a49f5ed5cd09ebf0c99cd2814c435bccb0f3c412c1e57d97d9d02d0db6a81fb",
+   "stale": false
+  }
+ }
+}
