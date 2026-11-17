@@ -2,7 +2,8 @@ name: Sincronizar catálogos
 
 # Cada lunes descarga los precios de Mercadona, Ahorramás y Lidl (Cuenca) y los publica en la
 # rama `catalog`, de donde los lee MiVanApp. Usa el permiso de escritura que GitHub da a este mismo
-# repositorio: no necesita ningún token.
+# repositorio: no necesita ningún token. Si algún supermercado falla, la ejecución acaba en error
+# (y GitHub avisa por correo); si todo va bien, termina sin avisar.
 on:
   schedule:
     - cron: "0 5 * * 1" # lunes 05:00 UTC
@@ -38,7 +39,7 @@ jobs:
 
       - name: Descargar catálogos
         # Devuelve error solo si fallan todas las cadenas; si falla alguna, conserva su catálogo anterior.
-        run: python3 run.py --out ../out
+        run: python3 run.py --out ../out --report "$RUNNER_TEMP/informe.json"
         working-directory: catalog-sync
 
       - name: Publicar
@@ -54,3 +55,9 @@ jobs:
             commit --quiet --amend -m "Catálogos $(date -u +%Y-%m-%d)"
           git push --quiet --force origin HEAD:catalog
           echo "Publicado: $(python3 -c 'import json;d=json.load(open("index.json"));print({k:(v["count"],v["stale"]) for k,v in d["stores"].items()})')"
+
+      - name: Avisar si algún supermercado no se ha actualizado
+        # Va después de publicar: los que sí se han descargado ya están publicados. Si falla alguno,
+        # la ejecución acaba en error y GitHub manda un correo; si todo va bien, no llega nada.
+        run: python3 run.py --check "$RUNNER_TEMP/informe.json"
+        working-directory: catalog-sync

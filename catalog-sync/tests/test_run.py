@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from datetime import datetime, timezone
@@ -43,6 +44,19 @@ class RunTest(unittest.TestCase):
         run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
         run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
         self.assertEqual(sorted(read_index(self.out)["stores"]), ["a", "b"])
+
+    def test_el_informe_dice_que_cadenas_fallaron(self):
+        report = self.out / "informe.json"
+        run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken), "b": ("B", ok), "c": ("C", crash)}, http=None, now=NOW, report_path=report)
+        self.assertEqual(json.loads(report.read_text(encoding="utf-8")), {"a": "stale", "b": "ok", "c": "missing"})
+
+    def test_check_report_falla_si_alguna_cadena_no_esta_al_dia(self):
+        report = self.out / "informe.json"
+        report.write_text(json.dumps({"a": "ok", "b": "stale"}), encoding="utf-8")
+        self.assertEqual(run.check_report(report), (1, ["b"]))
+        report.write_text(json.dumps({"a": "ok", "b": "ok"}), encoding="utf-8")
+        self.assertEqual(run.check_report(report), (0, []))
 
     def test_cadenas_registradas(self):
         self.assertEqual(sorted(run.STORES), ["ahorramas", "lidl", "mercadona"])

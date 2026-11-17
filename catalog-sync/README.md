@@ -47,3 +47,6 @@ regístrala en `STORES` dentro de `run.py`.
 El flujo `.github/workflows/catalog-sync.yml` de este repositorio lo ejecuta cada lunes a las 05:00 UTC
 y publica en la rama `catalog` con el permiso de escritura que GitHub da al propio repositorio.
 Se puede lanzar a mano desde la pestaña Actions («Run workflow»).
+
+Si algún supermercado no se actualiza, la ejecución termina en error después de publicar los demás
+y GitHub manda un correo. Si todo va bien no llega ningún aviso.
