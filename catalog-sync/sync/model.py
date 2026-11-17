@@ -16,9 +16,13 @@ class Product:
     cat: str = ""
     sub: str = ""
     catOrder: int = 0
+    score: Optional[dict] = None  # nota de salud; las versiones antiguas de la app la ignoran
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        data = asdict(self)
+        if data["score"] is None:
+            del data["score"]
+        return data
 
 
 def clean(products: Iterable[Product]) -> List[Product]:

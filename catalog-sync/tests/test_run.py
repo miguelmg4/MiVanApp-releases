@@ -60,3 +60,20 @@ class RunTest(unittest.TestCase):
 
     def test_cadenas_registradas(self):
         self.assertEqual(sorted(run.STORES), ["ahorramas", "lidl", "mercadona"])
+
+
+class NotasTest(unittest.TestCase):
+    def test_report_includes_notas(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out, report = Path(tmp) / "out", Path(tmp) / "informe.json"
+            calls = []
+
+            def enrich(products, http, out_dir):
+                calls.append(len(products))
+                return products, "missing"
+
+            run.sync(out, {"mercadona": ("Mercadona", ok), "b": ("B", ok)}, http=None, now=NOW,
+                     report_path=report, enrich={"mercadona": enrich})
+            self.assertEqual(json.loads(report.read_text())["notas"], "missing")
+            self.assertEqual(calls, [1])
+            self.assertEqual(run.check_report(report), (1, ["notas"]))

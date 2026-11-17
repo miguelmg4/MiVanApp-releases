@@ -37,3 +37,9 @@ class AdditivesTest(unittest.TestCase):
 
     def test_code_and_name_not_duplicated(self):
         self.assertEqual(codes(table().find_in_text("nitrito sódico (E250)")), ["E250"])
+
+    def test_food_names_are_not_additives(self):
+        t = table()
+        for text in ["Azafrán en hebra", "relleno sabor caramelo", "copos de amaranto", "gelatina de vacuno"]:
+            self.assertEqual(codes(t.find_in_text(text)), [], text)
+        self.assertEqual(codes(t.find_in_text("colorante (E150)")), ["E150"])

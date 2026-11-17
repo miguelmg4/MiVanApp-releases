@@ -10,6 +10,7 @@ from sync.model import Product, clean
 
 SCHEMA = 1
 INDEX = "index.json"
+ATTRIBUTION = "Datos nutricionales: Open Food Facts (ODbL)"
 MIN_RATIO = 0.5  # por debajo de la mitad de la semana anterior se asume un bloqueo parcial
 
 
@@ -25,7 +26,7 @@ def read_index(out_dir: Path) -> dict:
 
 
 def write_index(out_dir: Path, entries: Dict[str, dict]) -> None:
-    index = {"schema": SCHEMA, "stores": entries}
+    index = {"schema": SCHEMA, "attribution": ATTRIBUTION, "stores": entries}
     (out_dir / INDEX).write_text(json.dumps(index, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 

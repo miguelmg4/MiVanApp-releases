@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
+from sync.health.pipeline import enrich_mercadona
 from sync.http import Http
 from sync.publish import publish_store, read_index, write_index
 from sync.stores import ahorramas, lidl, mercadona
@@ -22,11 +23,15 @@ STORES: Dict[str, Tuple[str, Callable]] = {
 
 
 def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: datetime,
-         limit: Optional[int] = None, report_path: Optional[Path] = None) -> int:
+         limit: Optional[int] = None, report_path: Optional[Path] = None,
+         enrich: Optional[Dict[str, Callable]] = None) -> int:
     """Devuelve 0 si al menos una cadena se publica fresca; 1 si todas fallan.
 
     Con [report_path] escribe el estado de cada cadena: "ok" (publicada esta vez), "stale" (falló y se
     conserva la anterior) o "missing" (falló y no había nada anterior).
+
+    `enrich` añade la nota de salud a los productos de una cadena antes de publicarlos; su estado va
+    al informe como "notas" ("ok" o "missing").
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     entries = dict(read_index(out_dir)["stores"])
@@ -38,6 +43,8 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
         except Exception as error:  # una cadena rota no debe tumbar a las demás
             print(f"{key}: FALLO en la descarga: {type(error).__name__}: {error}", file=sys.stderr)
             products = None
+        if products and enrich and key in enrich:
+            products, status["notas"] = enrich[key](products, http, out_dir)
         entry = publish_store(out_dir, key, name, products, now)
         if entry is None:
             entries.pop(key, None)
@@ -85,7 +92,8 @@ def main(argv=None) -> int:
     if unknown:
         parser.error(f"cadenas desconocidas: {', '.join(unknown)}")
     selected = {key: STORES[key] for key in args.stores.split(",")}
-    return sync(args.out, selected, Http(), datetime.now(timezone.utc), args.limit, args.report)
+    return sync(args.out, selected, Http(), datetime.now(timezone.utc), args.limit, args.report,
+                {"mercadona": enrich_mercadona})
 
 
 if __name__ == "__main__":

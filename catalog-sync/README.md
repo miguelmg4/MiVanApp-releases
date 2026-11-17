@@ -25,8 +25,11 @@ Solo usa la biblioteca estándar de Python (3.9 o superior).
 ## Salida
 
 - `<cadena>.json.gz`: `{schema, store, syncedAt, products[]}`. Cada producto lleva `id`, `name`,
-  `price`, `brand`, `size`, `unitPrice`, `unitLabel`, `image`, `cat`, `sub` y `catOrder`.
-- `index.json`: por cadena, `name`, `file`, `count`, `syncedAt`, `sha256` y `stale`.
+  `price`, `brand`, `size`, `unitPrice`, `unitLabel`, `image`, `cat`, `sub`, `catOrder` y, si
+  tiene nota de salud, `score`.
+- `index.json`: `attribution` y, por cadena, `name`, `file`, `count`, `syncedAt`, `sha256` y `stale`.
+- `details/`: copias de respaldo de las fichas de Mercadona, el extracto de Open Food Facts y la
+  taxonomía de aditivos. `LICENCIA-DATOS.md`: licencia ODbL de los datos de salud.
 
 URL pública: `https://raw.githubusercontent.com/miguelmg4/MiVanApp-releases/catalog/index.json`
 
@@ -50,3 +53,24 @@ Se puede lanzar a mano desde la pestaña Actions («Run workflow»).
 
 Si algún supermercado no se actualiza, la ejecución termina en error después de publicar los demás
 y GitHub manda un correo. Si todo va bien no llega ningún aviso.
+
+## Notas de salud
+
+Cada producto de alimentación de Mercadona lleva `score`: una nota de 0 a 100 al estilo del método
+público de Yuka, calculada en `sync/health/` con datos abiertos (sin datos de Yuka).
+
+- **Fuentes:** la ficha de cada producto de Mercadona (EAN e ingredientes, se revisan todas cada
+  semana para notar cambios de receta), el volcado CSV de Open Food Facts (Nutri-Score, NOVA,
+  aditivos y etiqueta ecológica; se recorre en streaming y solo se guardan nuestros productos) y su
+  taxonomía de aditivos (riesgo de sobreexposición según la EFSA).
+- **Nota completa** (`kind: "full"`, si hay Nutri-Score): 60 % nutrición + 30 % aditivos + 10 %
+  ecológico. **Nota por ingredientes** (`kind: "ingredients"`): 60 % procesado (NOVA de Open Food
+  Facts o estimado con los ingredientes) + 30 % aditivos + 10 % ecológico. Un aditivo de riesgo
+  alto limita la nota a 49.
+- Sin nota: cosmética, limpieza, mascotas, alcohol y productos sin ingredientes ni Nutri-Score
+  (salvo frescos, que cuentan como un solo ingrediente). Lidl y Ahorramás no tienen nota: no
+  publican código de barras ni ingredientes.
+- **Si algo falla** se usa la copia de `details/`; si no hay ninguna, se publican los precios sin
+  notas y el informe marca `notas: missing` (correo de GitHub).
+- Licencia: los datos derivados de Open Food Facts son ODbL; hay que citarlos («Datos
+  nutricionales: Open Food Facts»).

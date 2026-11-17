@@ -75,3 +75,11 @@ class PublishTest(unittest.TestCase):
 
     def test_lista_vacia_es_un_fallo(self):
         self.assertIsNone(self.publish([]))
+
+
+class AttributionTest(unittest.TestCase):
+    def test_index_has_attribution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            write_index(Path(tmp), {})
+            index = read_index(Path(tmp))
+        self.assertEqual(index["attribution"], "Datos nutricionales: Open Food Facts (ODbL)")

@@ -7,6 +7,14 @@ from typing import Dict, Iterable, List, Pattern, Tuple
 _RISKS = {"en:high": "high", "en:moderate": "moderate", "en:no": "none"}
 _CODE = re.compile(r"\bE\s?-?\s?(\d{3,4}[a-d]?)(?!\w)", re.IGNORECASE)
 _MIN_NAME = 5  # nombres más cortos dan demasiados falsos positivos
+# Nombres de aditivo que en una etiqueta suelen ser un alimento, un sabor o una vitamina, no un
+# aditivo: solo cuentan si aparecen con su número E.
+FOOD_NAMES = {
+    "azafran", "caramelo", "gelatina", "amaranto", "tanino", "sandalo", "licopeno", "dextrina",
+    "riboflavina", "alanina", "l-leucina", "etanol", "nitrogeno", "oxigeno", "plata", "aluminio",
+    "cloro", "helio", "beta-caroteno", "alfa-caroteno", "luteina", "alfa-tocoferol",
+    "delta-tocoferol", "gamma-tocoferol", "tocoferol concentrado", "peptona", "lisozima",
+}
 
 
 @dataclass(frozen=True)
@@ -26,7 +34,8 @@ class AdditiveTable:
     def __init__(self, by_code: Dict[str, Additive]):
         self.by_code = by_code
         names = sorted(
-            ((plain(a.name), a.code) for a in by_code.values() if len(a.name) >= _MIN_NAME and a.name != a.code),
+            ((plain(a.name), a.code) for a in by_code.values()
+             if len(a.name) >= _MIN_NAME and a.name != a.code and plain(a.name) not in FOOD_NAMES),
             key=lambda item: -len(item[0]),
         )
         self._names: List[Tuple[Pattern, str]] = [

@@ -20,3 +20,10 @@ class CleanTest(unittest.TestCase):
             ["brand", "cat", "catOrder", "id", "image", "name", "price", "size", "sub", "unitLabel", "unitPrice"],
         )
         self.assertIsNone(d["brand"])
+
+
+class ScoreFieldTest(unittest.TestCase):
+    def test_to_dict_omits_missing_score(self):
+        self.assertNotIn("score", Product(id="1", name="Leche", price=1.0).to_dict())
+        scored = Product(id="1", name="Leche", price=1.0, score={"value": 80})
+        self.assertEqual(scored.to_dict()["score"], {"value": 80})

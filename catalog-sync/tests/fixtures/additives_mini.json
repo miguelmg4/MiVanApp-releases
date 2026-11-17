@@ -43,5 +43,29 @@
    "es": "E471 - mono- y diglicéridos de ácidos grasos",
    "en": "E471 - Mono- and diglycerides of fatty acids"
   }
+ },
+ "en:e150": {
+  "name": {
+   "es": "E150 - Caramelo",
+   "en": "E150 - Caramel"
+  }
+ },
+ "en:e164": {
+  "name": {
+   "es": "E164 - azafrán",
+   "en": "E164 - saffron"
+  }
+ },
+ "en:e123": {
+  "name": {
+   "es": "E123 - Amaranto",
+   "en": "E123 - Amaranth"
+  }
+ },
+ "en:e428": {
+  "name": {
+   "es": "E428 - Gelatina",
+   "en": "E428 - Gelatine"
+  }
  }
 }
