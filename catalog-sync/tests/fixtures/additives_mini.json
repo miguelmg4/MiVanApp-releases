@@ -1,0 +1,47 @@
+{
+ "en:e250": {
+  "name": {
+   "es": "E250 - Nitrito sódico",
+   "en": "E250 - Sodium nitrite"
+  },
+  "efsa_evaluation_overexposure_risk": {
+   "en": "en:high"
+  }
+ },
+ "en:e621": {
+  "name": {
+   "es": "E621 - Glutamato monosódico",
+   "en": "E621 - Monosodium glutamate"
+  },
+  "efsa_evaluation_overexposure_risk": {
+   "en": "en:high"
+  }
+ },
+ "en:e133": {
+  "name": {
+   "es": "E133 - Azul brillante FCF",
+   "en": "E133 - Brilliant blue FCF"
+  },
+  "efsa_evaluation_overexposure_risk": {
+   "en": "en:moderate"
+  }
+ },
+ "en:e330": {
+  "name": {
+   "es": "E330 - Ácido cítrico",
+   "en": "E330 - Citric acid"
+  }
+ },
+ "en:e120": {
+  "name": {
+   "es": "E120 - Cochinilla",
+   "en": "E120 - Cochineal"
+  }
+ },
+ "en:e471": {
+  "name": {
+   "es": "E471 - mono- y diglicéridos de ácidos grasos",
+   "en": "E471 - Mono- and diglycerides of fatty acids"
+  }
+ }
+}
