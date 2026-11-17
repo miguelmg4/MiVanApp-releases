@@ -60,6 +60,16 @@ class ComputeTest(unittest.TestCase):
                     "Tomate, sal, aceite de oliva", None, TABLE)
         self.assertEqual((s["value"], s["organic"]), (70, True))
 
+    def test_fruta_con_tratamiento_de_superficie_sigue_siendo_fresca(self):
+        # Mercadona pone en «ingredientes» el tratamiento de la piel de los cítricos: la fruta no es un ultraprocesado.
+        s = compute("Mandarina", "Fruta y verdura", "Cítricos",
+                    "Tratado con agentes de recubrimiento (E330) Imazalil.", None, TABLE)
+        self.assertEqual((s["nova"], s["value"], s["kind"]), (1, 90, "ingredients"))
+        s = compute("Mandarina", "Fruta y verdura", "Cítricos",
+                    "Tratado con agentes de recubrimiento (E330, E-250) Imazalil y fludioxonil.", None, TABLE)
+        self.assertEqual((s["nova"], s["value"]), (1, 49))  # el aditivo de riesgo alto sigue contando
+        self.assertEqual([a["code"] for a in s["additives"]], ["E330", "E250"])
+
     def test_fresh_without_ingredients(self):
         s = compute("Manzana Golden", "Fruta y verdura", "Manzana y pera", "", None, TABLE)
         self.assertEqual((s["value"], s["nova"], s["kind"]), (90, 1, "ingredients"))

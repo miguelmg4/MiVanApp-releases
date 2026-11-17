@@ -87,6 +87,15 @@ def _is_fresh(cat: str, sub: str) -> bool:
     return subs is None or sub in subs
 
 
+# Texto que describe un tratamiento de la piel (ceras, fungicidas de los cítricos), no una receta.
+_SURFACE = re.compile(r"^\s*tratad[oa]s?\b|agentes? de recubrimiento|en superficie")
+PRODUCE_CAT = "Fruta y verdura"
+
+
+def _surface_only(cat: str, ingredients: str) -> bool:
+    return cat == PRODUCE_CAT and bool(ingredients) and bool(_SURFACE.search(plain(ingredients)))
+
+
 def compute(name: str, cat: str, sub: str, ingredients: str, off: Optional[OffRow],
             table: AdditiveTable) -> Optional[dict]:
     if not _is_food(name, cat, sub):
@@ -101,7 +110,10 @@ def compute(name: str, cat: str, sub: str, ingredients: str, off: Optional[OffRo
         additives = table.from_tags(off.additives_tags)
     else:
         additives = table.find_in_text(ingredients) if ingredients else []
-    nova_estimated, markers = estimate_nova(ingredients, additives) if ingredients else (1, 0)
+    if _surface_only(cat, ingredients):
+        nova_estimated, markers = 1, 0  # fruta entera: el tratamiento es de la piel, sus aditivos sí cuentan
+    else:
+        nova_estimated, markers = estimate_nova(ingredients, additives) if ingredients else (1, 0)
     if off and off.nova_group:
         nova, estimated = off.nova_group, False
     elif ingredients or fresh:

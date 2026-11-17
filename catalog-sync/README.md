@@ -75,6 +75,8 @@ público de Yuka, calculada en `sync/health/` con datos abiertos (sin datos de Y
 - Sin nota: cosmética, limpieza, mascotas, alcohol y productos sin ingredientes ni Nutri-Score
   (salvo frescos, que cuentan como un solo ingrediente). Lidl y Ahorramás no tienen nota: no
   publican código de barras ni ingredientes.
+- Fruta con tratamiento de la piel («Tratado con agentes de recubrimiento…», típico de los cítricos)
+  sigue contando como fresca (NOVA 1); los aditivos del tratamiento sí puntúan.
 - **Si algo falla** se usa la copia de `details/`; si no hay ninguna, se publican los precios sin
   notas y el informe marca `notas: missing` (correo de GitHub).
 - Licencia: los datos derivados de Open Food Facts son ODbL; hay que citarlos («Datos
