@@ -5,7 +5,7 @@ por cadena más un índice. La app los baja y busca en local.
 
 | Cadena | Origen | Notas |
 |---|---|---|
-| Mercadona | API de su tienda online | Almacén 4606 (el del CP 16002) |
+| Mercadona | API de su tienda online | Almacén 4606 (el de Cuenca) |
 | Ahorramás | Rejilla de productos de su web | Una petición por página de 48 productos |
 | Lidl | Servicio de catálogo de la app Lidl Plus | Tienda ES0573 (Cuenca). Servicio interno: puede cambiar sin aviso |
 

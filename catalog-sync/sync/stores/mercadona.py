@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 
 from sync.model import Product
 
-WAREHOUSE = "4606"  # el que asigna tienda.mercadona.es al CP 16002
+WAREHOUSE = "4606"  # el que asigna tienda.mercadona.es a Cuenca
 BASE = "https://tienda.mercadona.es/api/categories/"
 QUERY = f"?lang=es&wh={WAREHOUSE}"
 

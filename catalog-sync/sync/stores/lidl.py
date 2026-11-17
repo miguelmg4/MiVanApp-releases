@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 
 from sync.model import Product
 
-STORE = "ES0573"  # Cuenca, C. de Pedro Almodóvar
+STORE = "ES0573"  # tienda de Cuenca
 BASE = f"https://product-catalog.lidlplus.com/api/app/v1/ES/store/{STORE}"
 HEADERS = {"Accept-Language": "es"}
 
