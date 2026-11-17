@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Descarga los catálogos de los supermercados y publica un fichero por cadena.
 
-Uso: python3 run.py --out DIR [--stores mercadona,lidl] [--limit N]
+Uso: python3 run.py --out DIR [--stores mercadona,lidl] [--limit N] [--stale-only]
 """
 import argparse
 import json
@@ -71,12 +71,20 @@ def check_report(report_path: Path) -> Tuple[int, List[str]]:
     return (1 if failed else 0), failed
 
 
+def stale_stores(out_dir: Path, known: List[str]) -> List[str]:
+    """Cadenas de `known` que no se actualizaron en la última ejecución (o que no están publicadas)."""
+    entries = read_index(out_dir)["stores"]
+    return [key for key in known if key not in entries or entries[key].get("stale")]
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, help="carpeta de salida")
     parser.add_argument("--stores", default=",".join(STORES), help="cadenas separadas por comas")
     parser.add_argument("--limit", type=int, help="solo las N primeras categorías de cada cadena (pruebas)")
     parser.add_argument("--report", type=Path, help="escribe aquí el estado de cada cadena (JSON)")
+    parser.add_argument("--stale-only", action="store_true",
+                        help="solo las cadenas que quedaron sin actualizar (reintento diario)")
     parser.add_argument("--check", type=Path, help="no descarga: falla si el informe tiene alguna cadena sin actualizar")
     args = parser.parse_args(argv)
     if args.check:
@@ -91,9 +99,18 @@ def main(argv=None) -> int:
     unknown = [s for s in args.stores.split(",") if s not in STORES]
     if unknown:
         parser.error(f"cadenas desconocidas: {', '.join(unknown)}")
-    selected = {key: STORES[key] for key in args.stores.split(",")}
-    return sync(args.out, selected, Http(), datetime.now(timezone.utc), args.limit, args.report,
+    keys = args.stores.split(",")
+    if args.stale_only:
+        keys = stale_stores(args.out, keys)
+        if not keys:
+            print("Todas las cadenas están al día: nada que reintentar.")
+            return 0
+        print(f"Reintentando: {', '.join(keys)}")
+    selected = {key: STORES[key] for key in keys}
+    code = sync(args.out, selected, Http(), datetime.now(timezone.utc), args.limit, args.report,
                 {"mercadona": enrich_mercadona})
+    # El reintento nunca acaba en error: el aviso por correo ya lo da la ejecución del lunes.
+    return 0 if args.stale_only else code
 
 
 if __name__ == "__main__":

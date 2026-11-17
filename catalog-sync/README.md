@@ -54,6 +54,11 @@ Se puede lanzar a mano desde la pestaña Actions («Run workflow»).
 Si algún supermercado no se actualiza, la ejecución termina en error después de publicar los demás
 y GitHub manda un correo. Si todo va bien no llega ningún aviso.
 
+El flujo `.github/workflows/catalog-retry.yml` reintenta cada día (salvo el lunes, a las 06:00 UTC) solo
+los supermercados que quedaron con `stale: true` (`python3 run.py --out DIR --stale-only`). Si todos
+están al día acaba en segundos sin descargar nada; si el reintento vuelve a fallar termina sin error,
+para no mandar un correo diario: el aviso lo vuelve a dar la ejecución del lunes siguiente.
+
 ## Notas de salud
 
 Cada producto de alimentación de Mercadona lleva `score`: una nota de 0 a 100 al estilo del método

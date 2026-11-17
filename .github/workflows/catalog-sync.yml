@@ -4,7 +4,8 @@ name: Sincronizar catálogos
 # rama `catalog`, de donde los lee MiVanApp. A Mercadona le añade la nota de salud (fichas de
 # producto + Open Food Facts), lo que alarga la ejecución a ~1 h. Usa el permiso de escritura que GitHub da a este mismo
 # repositorio: no necesita ningún token. Si algún supermercado falla, la ejecución acaba en error
-# (y GitHub avisa por correo); si todo va bien, termina sin avisar.
+# (y GitHub avisa por correo); si todo va bien, termina sin avisar. Los que fallen se reintentan
+# a diario con catalog-retry.yml, sin correo.
 on:
   schedule:
     - cron: "0 5 * * 1" # lunes 05:00 UTC

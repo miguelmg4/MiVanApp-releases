@@ -58,6 +58,22 @@ class RunTest(unittest.TestCase):
         report.write_text(json.dumps({"a": "ok", "b": "ok"}), encoding="utf-8")
         self.assertEqual(run.check_report(report), (0, []))
 
+    def test_stale_stores_lista_las_que_no_estan_al_dia(self):
+        run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken), "b": ("B", ok)}, http=None, now=NOW)
+        self.assertEqual(run.stale_stores(self.out, ["a", "b", "c"]), ["a", "c"])
+
+    def test_solo_desactualizadas_sin_ninguna_no_descarga(self):
+        run.sync(self.out, {"mercadona": ("M", ok), "ahorramas": ("A", ok), "lidl": ("L", ok)}, http=None, now=NOW)
+        self.assertEqual(run.main(["--out", str(self.out), "--stale-only"]), 0)
+
+    def test_reintento_fallido_no_acaba_en_error(self):
+        # un error haría que GitHub mandase un correo cada día; el aviso ya lo da la ejecución del lunes
+        from unittest import mock
+        run.sync(self.out, {"lidl": ("L", broken)}, http=None, now=NOW)
+        with mock.patch.dict(run.STORES, {"lidl": ("Lidl", broken)}):
+            self.assertEqual(run.main(["--out", str(self.out), "--stores", "lidl", "--stale-only"]), 0)
+
     def test_cadenas_registradas(self):
         self.assertEqual(sorted(run.STORES), ["ahorramas", "lidl", "mercadona"])
 
