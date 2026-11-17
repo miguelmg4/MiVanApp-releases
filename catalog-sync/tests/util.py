@@ -19,6 +19,9 @@ class FakeHttp:
     def get_json(self, url, headers=None):
         self.urls.append(url)
         self.headers = headers
-        return self.routes[url]
+        response = self.routes[url]
+        if isinstance(response, Exception):
+            raise response
+        return response
 
     get_text = get_json

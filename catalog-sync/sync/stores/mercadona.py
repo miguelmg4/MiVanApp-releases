@@ -1,6 +1,7 @@
 """Mercadona: API pública de su tienda online, almacén que sirve a Cuenca."""
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
+from sync.http import FetchError
 from sync.model import Product
 
 WAREHOUSE = "4606"  # el que asigna tienda.mercadona.es a Cuenca
@@ -51,6 +52,35 @@ def parse_category(data: dict, cat: str, cat_order: int) -> List[Product]:
                 catOrder=cat_order,
             ))
     return products
+
+
+PRODUCT = "https://tienda.mercadona.es/api/products/{id}/" + QUERY
+
+
+def parse_detail(data: Optional[dict]) -> Optional[dict]:
+    """EAN e ingredientes (en crudo, con HTML) de la ficha de un producto."""
+    if not data:
+        return None
+    nutrition = data.get("nutrition_information") or {}
+    ean = data.get("ean")
+    return {"ean": str(ean) if ean else None, "ingredients": nutrition.get("ingredients") or ""}
+
+
+def fetch_details(http, ids: List[str], cache: Dict[str, dict]) -> Tuple[Dict[str, dict], int]:
+    """Pide la ficha de todos los productos; si una falla, usa la de la caché (si la hay)."""
+    details: Dict[str, dict] = {}
+    failures = 0
+    for product_id in ids:
+        try:
+            detail = parse_detail(http.get_json(PRODUCT.format(id=product_id)))
+        except FetchError:
+            detail = None
+        if detail is None:
+            failures += 1
+            detail = cache.get(product_id)
+        if detail is not None:
+            details[product_id] = detail
+    return details, failures
 
 
 def fetch(http, limit: Optional[int] = None) -> List[Product]:
