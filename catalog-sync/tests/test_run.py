@@ -1,0 +1,48 @@
+import tempfile
+import unittest
+from datetime import datetime, timezone
+from pathlib import Path
+
+import run
+from sync.http import FetchError
+from sync.model import Product
+from sync.publish import read_index
+
+NOW = datetime(2026, 11, 16, 21, 0, tzinfo=timezone.utc)
+
+
+def ok(http, limit=None):
+    return [Product(id="1", name="Leche", price=1.0)]
+
+
+def broken(http, limit=None):
+    raise FetchError("sin red")
+
+
+def crash(http, limit=None):
+    raise KeyError("la web cambió de formato")
+
+
+class RunTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_una_cadena_rota_no_impide_publicar_las_demas(self):
+        code = run.sync(self.out, {"a": ("A", broken), "b": ("B", ok), "c": ("C", crash)}, http=None, now=NOW)
+        self.assertEqual(code, 0)
+        self.assertEqual(list(read_index(self.out)["stores"]), ["b"])
+
+    def test_todas_rotas_devuelve_error(self):
+        self.assertEqual(run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW), 1)
+
+    def test_sincronizar_una_sola_cadena_conserva_las_otras_en_el_indice(self):
+        run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
+        self.assertEqual(sorted(read_index(self.out)["stores"]), ["a", "b"])
+
+    def test_cadenas_registradas(self):
+        self.assertEqual(sorted(run.STORES), ["ahorramas", "lidl", "mercadona"])

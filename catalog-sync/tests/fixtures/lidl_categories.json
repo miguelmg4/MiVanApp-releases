@@ -1,0 +1,16 @@
+{
+ "categories": [
+  {
+   "id": "1001",
+   "name": "Fruta y verdura",
+   "imageUrl": "https://static-product-catalog.lidlplus.com/images/category/default/fruits_and_vegetables.png",
+   "hasSubcategories": true
+  },
+  {
+   "id": "1002",
+   "name": "Carne fresca",
+   "imageUrl": "https://static-product-catalog.lidlplus.com/images/category/default/9a6dc12f-3109-4c89-950c-9db8c07e44ca.png",
+   "hasSubcategories": true
+  }
+ ]
+}

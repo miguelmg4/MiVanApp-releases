@@ -1,0 +1,122 @@
+{
+ "id": "1001",
+ "title": "Frutas",
+ "totalProducts": 3,
+ "products": [
+  {
+   "id": "8800521561963_ES",
+   "brand": null,
+   "title": "Aguacate ecológico",
+   "subtitle": null,
+   "imageUrl": "https://mam.cdn.schwarz/m/6323476_m.png?t=1902958&im=Resize%3d(384)",
+   "aiGeneratedImage": false,
+   "price": {
+    "price": 2.85,
+    "priceWithoutDeposit": 2.85,
+    "deposit": null,
+    "symbol": "€",
+    "discount": null,
+    "oldPrice": null,
+    "annotations": [
+     "1kg = 6.33",
+     "3Stk."
+    ],
+    "annotationsWithoutDeposit": [
+     "1kg = 6.33",
+     "3Stk."
+    ],
+    "lidlPlusOffer": null
+   },
+   "stockAvailability": {
+    "stockIndicator": "Available"
+   },
+   "ageLimit": null,
+   "productLine": "FruitsAndVegetables",
+   "listingType": "Assortment",
+   "productValidForClickAndCollect": true,
+   "totalCoupons": 0
+  },
+  {
+   "id": "8800540338027_ES",
+   "brand": null,
+   "title": "Aguacate en su punto",
+   "subtitle": null,
+   "imageUrl": "https://mam.cdn.schwarz/m/6219274_m.png?t=1902958&im=Resize%3d(384)",
+   "aiGeneratedImage": false,
+   "price": {
+    "price": 3.49,
+    "priceWithoutDeposit": 3.49,
+    "deposit": null,
+    "symbol": "€",
+    "discount": null,
+    "oldPrice": null,
+    "annotations": [
+     "1kg = 8.73",
+     "2Stk."
+    ],
+    "annotationsWithoutDeposit": [
+     "1kg = 8.73",
+     "2Stk."
+    ],
+    "lidlPlusOffer": null
+   },
+   "stockAvailability": {
+    "stockIndicator": "Available"
+   },
+   "ageLimit": null,
+   "productLine": "FruitsAndVegetables",
+   "listingType": "Assortment",
+   "productValidForClickAndCollect": true,
+   "totalCoupons": 0
+  },
+  {
+   "id": "8800540174187_ES",
+   "brand": null,
+   "title": "Aguacate granel",
+   "subtitle": null,
+   "imageUrl": "https://mam.cdn.schwarz/m/6122426_m.png?t=1902958&im=Resize%3d(384)",
+   "aiGeneratedImage": false,
+   "price": {
+    "price": 5.19,
+    "priceWithoutDeposit": 5.19,
+    "deposit": null,
+    "symbol": "€",
+    "discount": null,
+    "oldPrice": null,
+    "annotations": [
+     "1kg"
+    ],
+    "annotationsWithoutDeposit": [
+     "1kg"
+    ],
+    "lidlPlusOffer": {
+     "largePartNumeric": 3.59,
+     "smallPartNumeric": 5.19,
+     "largePartString": null,
+     "smallPartString": null,
+     "hasAsterisk": false,
+     "priceSymbol": "€/kg",
+     "discountMessage": "-30%",
+     "pricePerUnit": null,
+     "packaging": null,
+     "lowestPrice": null,
+     "startValidityDateUtc": "2026-11-15T23:00:01Z",
+     "endValidityDateUtc": "2026-11-22T22:59:59Z",
+     "category": "Store",
+     "termsAndConditionsDescription": "Promoción válida del 16/11/2026 al 22/11/2026. Limitado a 4 unidad/es o kg (en artículos de peso variable). Oferta sujeta a disponibilidad en tienda. En caso de devolución, el descuento de la promoción no será reembolsado. Esta promoción no es acumulable a otras ofertas. En una promoción con varios productos, el descuento se aplicará en los de menor importe. ¿Dónde consulto los artículos en promoción de cada promoción? Haz click en &#39;código de los productos&#39; y comprueba que coincide con el código del producto de su cartel de precio (margen inferior izquierdo)."
+    }
+   },
+   "stockAvailability": {
+    "stockIndicator": "Available"
+   },
+   "ageLimit": null,
+   "productLine": "FruitsAndVegetables",
+   "listingType": "Assortment",
+   "productValidForClickAndCollect": true,
+   "totalCoupons": 0
+  }
+ ],
+ "config": {
+  "shoppingListHiddenWithGroceryPickup": true
+ }
+}

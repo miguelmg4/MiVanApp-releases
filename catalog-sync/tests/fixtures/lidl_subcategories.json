@@ -1,0 +1,17 @@
+{
+ "title": null,
+ "categories": [
+  {
+   "id": "1001",
+   "name": "Frutas",
+   "imageUrl": "https://static-product-catalog.lidlplus.com/images/category/default/bananas200.png",
+   "hasSubcategories": false
+  },
+  {
+   "id": "1002",
+   "name": "Verduras",
+   "imageUrl": "https://static-product-catalog.lidlplus.com/images/category/default/031dbd0d-fe7b-4c2f-a266-4bee5cb27142.png",
+   "hasSubcategories": false
+  }
+ ]
+}

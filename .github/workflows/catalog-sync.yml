@@ -1,0 +1,56 @@
+name: Sincronizar catálogos
+
+# Cada lunes descarga los precios de Mercadona, Ahorramás y Lidl (Cuenca) y los publica en la
+# rama `catalog`, de donde los lee MiVanApp. Usa el permiso de escritura que GitHub da a este mismo
+# repositorio: no necesita ningún token.
+on:
+  schedule:
+    - cron: "0 5 * * 1" # lunes 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: catalog-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Tests
+        run: python3 -m unittest discover -s tests -t .
+        working-directory: catalog-sync
+
+      - name: Traer el catálogo publicado
+        uses: actions/checkout@v4
+        with:
+          ref: catalog
+          path: out
+
+      - name: Descargar catálogos
+        # Devuelve error solo si fallan todas las cadenas; si falla alguna, conserva su catálogo anterior.
+        run: python3 run.py --out ../out
+        working-directory: catalog-sync
+
+      - name: Publicar
+        working-directory: out
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios que publicar."
+            exit 0
+          fi
+          # Un único commit que se reemplaza cada semana: el repositorio no crece.
+          git -c user.name="catalog-sync" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --quiet --amend -m "Catálogos $(date -u +%Y-%m-%d)"
+          git push --quiet --force origin HEAD:catalog
+          echo "Publicado: $(python3 -c 'import json;d=json.load(open("index.json"));print({k:(v["count"],v["stale"]) for k,v in d["stores"].items()})')"
