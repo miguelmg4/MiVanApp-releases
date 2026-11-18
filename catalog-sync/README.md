@@ -82,6 +82,11 @@ público de Yuka, calculada en `sync/health/` con datos abiertos (sin datos de Y
   semana para notar cambios de receta), el volcado CSV de Open Food Facts (Nutri-Score, NOVA,
   aditivos y etiqueta ecológica; se recorre en streaming y solo se guardan nuestros productos) y su
   taxonomía de aditivos (riesgo de sobreexposición según la EFSA).
+- **Riesgo de cada aditivo** (`risk`): primero el de la EFSA (`high`, `moderate`, `none`); si no
+  lo tiene, el que se deduce del Reglamento (CE) 1333/2008 (`sync/health/eu_additives.py`): Grupo I,
+  sin límite de cantidad → `none`; resto de autorizados, con dosis máximas → `limited`; E171,
+  prohibido desde 2022 → `high`. Las variantes (E322i, E450iii…) heredan el de su aditivo
+  principal. Solo `high` y `moderate` restan nota; `limited` es informativo.
 - **Nota completa** (`kind: "full"`, si hay Nutri-Score): 60 % nutrición + 30 % aditivos + 10 %
   ecológico. **Nota por ingredientes** (`kind: "ingredients"`): 60 % procesado (NOVA de Open Food
   Facts o estimado con los ingredientes) + 30 % aditivos + 10 % ecológico. Un aditivo de riesgo
