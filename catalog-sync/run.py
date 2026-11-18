@@ -28,7 +28,8 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
     """Devuelve 0 si al menos una cadena se publica fresca; 1 si todas fallan.
 
     Con [report_path] escribe el estado de cada cadena: "ok" (publicada esta vez), "stale" (falló y se
-    conserva la anterior) o "missing" (falló y no había nada anterior).
+    conserva la anterior), "stale-known" (sigue fallando: ya estaba desactualizada antes) o "missing"
+    (falló y no había nada anterior).
 
     `enrich` añade la nota de salud a los productos de una cadena antes de publicarlos; su estado va
     al informe como "notas" ("ok" o "missing").
@@ -38,6 +39,7 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
     fresh = 0
     status: Dict[str, str] = {}
     for key, (name, fetch) in stores.items():
+        was_stale = bool(entries.get(key, {}).get("stale"))
         try:
             products = fetch(http, limit)
         except Exception as error:  # una cadena rota no debe tumbar a las demás
@@ -52,7 +54,7 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
             print(f"{key}: sin datos que publicar")
         else:
             entries[key] = entry
-            status[key] = "stale" if entry["stale"] else "ok"
+            status[key] = ("stale-known" if was_stale else "stale") if entry["stale"] else "ok"
             if entry["stale"]:
                 print(f"{key}: se conserva el catálogo anterior ({entry['count']} productos, {entry['syncedAt']})")
             else:
@@ -65,9 +67,13 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
 
 
 def check_report(report_path: Path) -> Tuple[int, List[str]]:
-    """(código de salida, cadenas que no se han actualizado esta vez)."""
+    """(código de salida, cadenas que han dejado de actualizarse esta vez).
+
+    Una caída que ya se avisó ("stale-known") no cuenta: el correo llega una vez al empezar, no cada
+    semana mientras dure. La app sigue mostrando la fecha de esos precios y «sin actualizar».
+    """
     status = json.loads(report_path.read_text(encoding="utf-8"))
-    failed = [key for key, value in status.items() if value != "ok"]
+    failed = [key for key, value in status.items() if value not in ("ok", "stale-known")]
     return (1 if failed else 0), failed
 
 
@@ -89,9 +95,12 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if args.check:
         code, failed = check_report(args.check)
+        known = [k for k, v in json.loads(args.check.read_text(encoding="utf-8")).items() if v == "stale-known"]
+        if known:
+            print(f"::warning::Siguen sin actualizar (ya avisado): {', '.join(known)}. Se reintentan a diario.")
         if failed:
             print(f"::error::No se han actualizado: {', '.join(failed)}. Se mantienen sus precios anteriores.")
-        else:
+        elif not known:
             print("Todas las cadenas actualizadas.")
         return code
     if args.out is None:

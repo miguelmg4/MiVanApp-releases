@@ -58,6 +58,27 @@ class RunTest(unittest.TestCase):
         report.write_text(json.dumps({"a": "ok", "b": "ok"}), encoding="utf-8")
         self.assertEqual(run.check_report(report), (0, []))
 
+    def test_una_caida_que_sigue_se_marca_como_ya_avisada(self):
+        report = self.out / "informe.json"
+        run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW, report_path=report)
+        self.assertEqual(json.loads(report.read_text(encoding="utf-8")), {"a": "stale-known"})
+
+    def test_check_report_solo_avisa_de_caidas_nuevas(self):
+        # una caída que ya se avisó no vuelve a mandar correo cada semana mientras dure
+        report = self.out / "informe.json"
+        report.write_text(json.dumps({"a": "ok", "b": "stale-known"}), encoding="utf-8")
+        self.assertEqual(run.check_report(report), (0, []))
+
+    def test_tras_recuperarse_una_nueva_caida_vuelve_a_avisar(self):
+        report = self.out / "informe.json"
+        run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW, report_path=report)
+        self.assertEqual(run.check_report(report), (1, ["a"]))
+
     def test_stale_stores_lista_las_que_no_estan_al_dia(self):
         run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
         run.sync(self.out, {"a": ("A", broken), "b": ("B", ok)}, http=None, now=NOW)

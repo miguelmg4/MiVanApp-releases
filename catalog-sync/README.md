@@ -51,13 +51,16 @@ El flujo `.github/workflows/catalog-sync.yml` de este repositorio lo ejecuta cad
 y publica en la rama `catalog` con el permiso de escritura que GitHub da al propio repositorio.
 Se puede lanzar a mano desde la pestaña Actions («Run workflow»).
 
-Si algún supermercado no se actualiza, la ejecución termina en error después de publicar los demás
-y GitHub manda un correo. Si todo va bien no llega ningún aviso.
+Si un supermercado deja de actualizarse, la ejecución termina en error después de publicar los demás
+y GitHub manda un correo, **una sola vez por caída**: mientras siga caído el informe lo marca como
+`stale-known` y las ejecuciones siguientes acaban bien, con un aviso en el registro. Si se recupera y
+vuelve a caer, se avisa de nuevo. Si todo va bien no llega ningún aviso. Mientras tanto la app muestra
+sus precios anteriores con la fecha y «sin actualizar».
 
 El flujo `.github/workflows/catalog-retry.yml` reintenta cada día (salvo el lunes, a las 06:00 UTC) solo
 los supermercados que quedaron con `stale: true` (`python3 run.py --out DIR --stale-only`). Si todos
 están al día acaba en segundos sin descargar nada; si el reintento vuelve a fallar termina sin error,
-para no mandar un correo diario: el aviso lo vuelve a dar la ejecución del lunes siguiente.
+para no mandar un correo diario.
 
 ## Notas de salud
 
