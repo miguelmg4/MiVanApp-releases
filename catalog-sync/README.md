@@ -55,7 +55,7 @@ sin páginas) sigue funcionando sin credenciales. En ese caso `sync/stores/lidl.
 catálogo buscando: las dos palabras menos frecuentes de cada producto publicado la vez anterior,
 luego el nombre entero de los que falten y, al final, términos generales y subcategorías para
 encontrar productos nuevos. Cada producto conserva su categoría; los nuevos toman la del producto
-conocido más parecido (o «Otros»). Son ~1.000 búsquedas, unos 15 minutos, y recupera más del 99 %
+conocido más parecido (o «Otros»). Son ~1.000 búsquedas, unos 20 minutos, y recupera más del 99 %
 del catálogo. Si las búsquedas fallan en masa se trata como fallo y se conserva el catálogo anterior.
 
 El flujo `.github/workflows/catalog-sync.yml` de este repositorio lo ejecuta cada lunes a las 05:00 UTC
