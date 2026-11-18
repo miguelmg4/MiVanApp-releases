@@ -87,6 +87,8 @@ público de Yuka, calculada en `sync/health/` con datos abiertos (sin datos de Y
   sin límite de cantidad → `none`; resto de autorizados, con dosis máximas → `limited`; E171,
   prohibido desde 2022 → `high`. Las variantes (E322i, E450iii…) heredan el de su aditivo
   principal. Solo `high` y `moderate` restan nota; `limited` es informativo.
+  Lo que no tiene riesgo de la EFSA ni está autorizado en la UE (gelatina E428, dextrina E1400,
+  etanol E1510, códigos mal escritos…) no se lista: es un ingrediente, no un aditivo.
 - **Nota completa** (`kind: "full"`, si hay Nutri-Score): 60 % nutrición + 30 % aditivos + 10 %
   ecológico. **Nota por ingredientes** (`kind: "ingredients"`): 60 % procesado (NOVA de Open Food
   Facts o estimado con los ingredientes) + 30 % aditivos + 10 % ecológico. Un aditivo de riesgo

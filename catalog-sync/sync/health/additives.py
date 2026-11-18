@@ -123,9 +123,12 @@ class AdditiveTable:
         return self._unique(code for _, code in sorted(found))
 
     def _unique(self, codes: Iterable[str]) -> List[Additive]:
+        """Sin repetir y sin lo que no es aditivo en la UE (sin riesgo de la EFSA ni autorización)."""
         seen, out = set(), []
         for code in codes:
             if code not in seen:
                 seen.add(code)
-                out.append(self._get(code))
+                additive = self._get(code)
+                if additive.risk != "unrated":
+                    out.append(additive)
         return out

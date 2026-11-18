@@ -54,8 +54,12 @@ class AdditivesTest(unittest.TestCase):
     def test_from_tags(self):
         self.assertEqual(codes(table().from_tags(["en:e330", "en:e250", "en:e330"])), ["E330", "E250"])
 
-    def test_unknown_code_is_unrated(self):
-        self.assertEqual(table().from_tags(["en:e1999"]), [Additive("E1999", "E1999", "unrated")])
+    def test_lo_que_no_es_aditivo_en_la_ue_no_se_lista(self):
+        # Gelatina (E428), dextrina (E1400), etanol (E1510) o códigos inexistentes: son ingredientes.
+        t = table()
+        self.assertEqual(t.from_tags(["en:e1999", "en:e428", "en:e1400", "en:e1510", "en:e330"]),
+                         [Additive("E330", "Ácido cítrico", "none")])
+        self.assertEqual(codes(t.find_in_text("azúcar, gelatina (E428), dextrina E1400")), [])
 
     def test_find_codes_variants(self):
         text = "acidulante (E-330), colorante E 150d, e621 y lote 12345E"
