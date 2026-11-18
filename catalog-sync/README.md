@@ -7,7 +7,7 @@ por cadena más un índice. La app los baja y busca en local.
 |---|---|---|
 | Mercadona | API de su tienda online | Almacén 4606 (el de Cuenca) |
 | Ahorramás | Rejilla de productos de su web | Una petición por página de 48 productos |
-| Lidl | Servicio de catálogo de la app Lidl Plus | Tienda ES0573 (Cuenca). Servicio interno: puede cambiar sin aviso |
+| Lidl | Servicio de catálogo de la app Lidl Plus | Tienda ES0573 (Cuenca). Servicio interno: puede cambiar sin aviso. Si la lista de categorías llega vacía, se reconstruye con su buscador (abajo) |
 
 Carrefour y Dia bloquean las descargas automáticas y no se sincronizan aquí.
 
@@ -46,6 +46,17 @@ devuelva una lista de `Product`, añade sus tests con respuestas guardadas en `t
 regístrala en `STORES` dentro de `run.py`.
 
 ## Actualización semanal
+
+### Lidl sin categorías
+
+Desde el 2026-11-17 el servicio de Lidl Plus devuelve la lista de categorías vacía (204) para
+todas las tiendas, pero su buscador (`/search?q=`, mínimo 3 letras, como mucho 40 resultados y
+sin páginas) sigue funcionando sin credenciales. En ese caso `sync/stores/lidl.py` reconstruye el
+catálogo buscando: las dos palabras menos frecuentes de cada producto publicado la vez anterior,
+luego el nombre entero de los que falten y, al final, términos generales y subcategorías para
+encontrar productos nuevos. Cada producto conserva su categoría; los nuevos toman la del producto
+conocido más parecido (o «Otros»). Son ~1.000 búsquedas, unos 15 minutos, y recupera más del 99 %
+del catálogo. Si las búsquedas fallan en masa se trata como fallo y se conserva el catálogo anterior.
 
 El flujo `.github/workflows/catalog-sync.yml` de este repositorio lo ejecuta cada lunes a las 05:00 UTC
 y publica en la rama `catalog` con el permiso de escritura que GitHub da al propio repositorio.

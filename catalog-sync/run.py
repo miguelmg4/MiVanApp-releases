@@ -4,6 +4,7 @@
 Uso: python3 run.py --out DIR [--stores mercadona,lidl] [--limit N] [--stale-only]
 """
 import argparse
+import inspect
 import json
 import sys
 from datetime import datetime, timezone
@@ -12,7 +13,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 from sync.health.pipeline import enrich_mercadona
 from sync.http import Http
-from sync.publish import publish_store, read_index, write_index
+from sync.publish import publish_store, read_index, read_products, write_index
 from sync.stores import ahorramas, lidl, mercadona
 
 STORES: Dict[str, Tuple[str, Callable]] = {
@@ -41,7 +42,10 @@ def sync(out_dir: Path, stores: Dict[str, Tuple[str, Callable]], http, now: date
     for key, (name, fetch) in stores.items():
         was_stale = bool(entries.get(key, {}).get("stale"))
         try:
-            products = fetch(http, limit)
+            if "previous" in inspect.signature(fetch).parameters:  # Lidl: lo necesita si tira del buscador
+                products = fetch(http, limit, previous=read_products(out_dir, key))
+            else:
+                products = fetch(http, limit)
         except Exception as error:  # una cadena rota no debe tumbar a las demás
             print(f"{key}: FALLO en la descarga: {type(error).__name__}: {error}", file=sys.stderr)
             products = None

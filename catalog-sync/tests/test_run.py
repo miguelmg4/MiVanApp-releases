@@ -79,6 +79,17 @@ class RunTest(unittest.TestCase):
         run.sync(self.out, {"a": ("A", broken)}, http=None, now=NOW, report_path=report)
         self.assertEqual(run.check_report(report), (1, ["a"]))
 
+    def test_sync_pasa_el_catalogo_anterior_a_quien_lo_pide(self):
+        seen = {}
+
+        def with_previous(http, limit=None, previous=None):
+            seen["ids"] = [p["id"] for p in previous]
+            return [Product(id="2", name="Pan", price=1.0)]
+
+        run.sync(self.out, {"a": ("A", ok)}, http=None, now=NOW)
+        run.sync(self.out, {"a": ("A", with_previous)}, http=None, now=NOW)
+        self.assertEqual(seen["ids"], ["1"])
+
     def test_stale_stores_lista_las_que_no_estan_al_dia(self):
         run.sync(self.out, {"a": ("A", ok), "b": ("B", ok)}, http=None, now=NOW)
         run.sync(self.out, {"a": ("A", broken), "b": ("B", ok)}, http=None, now=NOW)

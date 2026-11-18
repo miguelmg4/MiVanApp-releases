@@ -25,6 +25,18 @@ def read_index(out_dir: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def read_products(out_dir: Path, store: str) -> List[dict]:
+    """Productos publicados la última vez para `store` (lista vacía si no hay o no se pueden leer)."""
+    entry = read_index(out_dir)["stores"].get(store)
+    if not entry:
+        return []
+    try:
+        with gzip.open(out_dir / entry["file"], "rt", encoding="utf-8") as handle:
+            return list(json.load(handle).get("products") or [])
+    except (OSError, ValueError):
+        return []
+
+
 def write_index(out_dir: Path, entries: Dict[str, dict]) -> None:
     index = {"schema": SCHEMA, "attribution": ATTRIBUTION, "stores": entries}
     (out_dir / INDEX).write_text(json.dumps(index, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
